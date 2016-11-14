@@ -21,13 +21,31 @@ case 2 %high pressure branch
     %convert for invariants
     Ci=C/sqrt(1+mu^2);
     fi=mu/sqrt(1+mu^2);
-case 3 %Ice friction
+case 3 %Lizardite Reiner et al. 1994
+    C=0;
+    mu=0.25;
+    %convert for invariants
+    Ci=C/sqrt(1+mu^2);
+    fi=mu/sqrt(1+mu^2);
+case 4 %Lizardite plastic Amiguet 2014
+    C=100e6;
+    mu=0.0;
+    %convert for invariants
+    Ci=C/sqrt(1+mu^2);
+    fi=mu/sqrt(1+mu^2);    
+case 5 %saturation at 300 MPa
+    C=300e6;
+    mu=0.0;
+    %convert for invariants
+    Ci=C/sqrt(1+mu^2);
+    fi=mu/sqrt(1+mu^2);
+case 6 %Ice friction
     C=8.3e6;
     mu=0.2;
     %convert for invariants
     Ci=C/sqrt(1+mu^2);
     fi=mu/sqrt(1+mu^2);
-case 4 %Tension
+case 0 %Tension
     Ci=1;
     fi=1;
 end
