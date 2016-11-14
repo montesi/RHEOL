@@ -2,7 +2,7 @@
 il=0;
 Pbot=P0;ztop=0;zbot=0;
 newlayer='yes';
-while strncmpi(newlayer,'y',1)
+while or(strncmpi(newlayer,'y',1),newlayer==1);
     il=il+1;
     disp(sprintf('For layer %d: ',il));
     for ir=1:nrock
@@ -27,12 +27,40 @@ while strncmpi(newlayer,'y',1)
         zbot=zbot+model(il).thick;
         model(il).zbot=zbot;
         
+        %ibrit=[];
+        %disp('  1: Byerlee, low P branch');
+        %disp('  2: Byerlee, high P branch');
+        %disp('  3: Tensile strength');
+        %ans=input('Desired brittle rheology (can be a vector): ');
+        %if ~isempty(ans)
+        %    ibrit=ans;
+        %end
+        ibrit=[1,2];
+        if model(il).irock==10;
+            ans=input('Serpentine detected: Is it lizardite (low F, default = no): ');
+            if ~isempty(ans);
+                if or(strncmpi(ans,'yes',1),ans==1);
+                    ibrit=[3,4];
+                end
+            end
+        end
+        
         model(il).pf='p';
         disp('Default pore fluid pressure: hydrostatic');
         ans=input('Enter pore fluid pressure: lambda or keep hydrostatic');
         if ~isempty(ans)
             model(il).pf=ans;
         end
+                
+%         disp('Do you want to saturate at 300 MPa?');
+        ans=input('Do you want to saturate at 300 MPa? (default is no)');
+        if ~isempty(ans)
+            if or(strncmpi(ans,'yes',1),ans==1);
+                ibrit=[ibrit,5];
+            end
+        end
+        
+        
         
         model(il).Ptop=Pbot;
         rhoav=0;
@@ -60,13 +88,19 @@ while strncmpi(newlayer,'y',1)
                     rock(model(il).irock(im)).rheol(ir).name,...
                     rock(model(il).irock(im)).rheol(ir).ref));
             end
-            ans=input('Desired ductile rheology (can be a vector): ');
+            ans=input('Desired ductile rheology (can be a vector; enter 0 for brittle only): ');
             if ~isempty(ans)
-                nduct=length(ans);
-                iduct=ans;
+                if ans==0;
+                    nduct=0;
+                    iduct=[];
+                else
+                    nduct=length(ans);
+                    iduct=ans;
+                end
+                
                 %model(il).gs(im)=0;
                 model(il).rock(im).gs=0;
-                model(il).rock(im).gdep=zeros(size(iduct)+[0,2]);
+                model(il).rock(im).gdep=zeros([nrock,nduct+2]);
                 for ir=1:nduct
                     if (rock(model(il).irock(im)).rheol(iduct(ir)).m~=0);
                         model(il).rock(im).gdep(ir)=1;%(model(il).gs(im)==0);
@@ -110,23 +144,16 @@ while strncmpi(newlayer,'y',1)
                     end
                 end
             end
-            %ibrit=[];
-            %disp('  1: Byerlee, low P branch');
-            %disp('  2: Byerlee, high P branch');
-            %disp('  3: Tensile strength');
-            %ans=input('Desired brittle rheology (can be a vector): ');
-            %if ~isempty(ans)
-            %    ibrit=ans;
-            %end
-            ibrit=[1,2];
+            
             model(il).rock(im).nrheol=nduct+length(ibrit);
             %model(il).irheol(im,[1:model(il).nrheol(im)])=[iduct(im,[1:nduct(im)]),-ibrit];
+               
             model(il).rock(im).irheol=[iduct,-ibrit];
             model(il).rock(im).Wk=1;
         end
                       
-        model(il).rock(im).Ty='NaN';
-        if ~isempty(find(ibrit==3));
+        model(il).rock(im).Ty=NaN;
+        if ~isempty(find(ibrit==0));
             disp(sprintf('Default tensile strength: Ty=%g MPa',model(il).rock(im).Ty));
             ans=input('Enter desired tensile strength (in MPa): ');
             if ~isempty(ans)

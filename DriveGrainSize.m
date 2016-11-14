@@ -1,11 +1,16 @@
 modelSafe=model;
 
 RunName='Run';
+Version=version; 
+if Version(1)>=9;
+    matlab.graphics.internal.setPrintPreferences('DefaultPaperPositionMode','manual')
+end
+
 ans=input(sprintf('Enter run name (default: %s)',RunName));
 if ~isempty(ans);
     RunName=ans;
 end
-eall=10.^[-18:0.5:-6];
+eall=10.^[-20:0.5:-10];
 % eall=10.^[-18:3:-9];
 Sall=zeros(size(eall)+[2,0]);
 
@@ -34,9 +39,9 @@ figure(ifig); clf;
 subplot(211)
 hold on;
 loglog(Sall/1e6/1e3,eall,'linewidth',2);
-et=10.^[-18:-15]; %initial strain rate
+et=10.^[-20:-15]; %initial strain rate
 ii=size(Sall,1); %code for initial condition (here: last calculated)
-ep=10.^[linspace(-18,-9,20)]; %strain rate for display
+ep=10.^[linspace(-20,-10,20)]; %strain rate for display
 %initialize final strain rates
 ef=zeros(size(Sall,1),size(et,2)); %For constant energy
 es=ef; %for constant integrated stress
@@ -59,7 +64,7 @@ set(gca,...
     'xscale','log',...
     'yscale','log',...
     'xlim',[1e-0,1e3]*100,...
-    'ylim',10.^[-18,-6],...
+    'ylim',10.^[-20,-10],...
     'box','on');
 
 subplot(212); hold on;
@@ -69,7 +74,7 @@ set(gca,...
     'fontSize',12,...
     'xscale','log',...
     'yscale','log',...'xlim',[1e-0,1e3]*100,...
-    'xlim',10.^[-18,-15],...
+    'xlim',10.^[-20,-15],...
     'box','on');
 
 legend(gname.name,'Location','NorthWest')

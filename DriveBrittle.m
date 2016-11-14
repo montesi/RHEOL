@@ -5,17 +5,20 @@ ans=input(sprintf('Enter run name (default: %s)',RunName));
 if ~isempty(ans);
     RunName=ans;
 end
-eall=10.^[-18:0.5:-9];
-%eall=10.^[-18:3:-9];
-Wkall=[1,0.5,0.25,0.1]; nWk=numel(Wkall)
+eall=10.^[-20:0.5:-9];
+% eall=10.^[-18:3:-6];
+Wkall=[1,0.5,0.25,0.1]; nWk=numel(Wkall);
 Sall=zeros(nWk,size(eall,2));
 Eall=Sall;
 
- 
+%% 
 for ifig=1:nWk;
-    model.rock.Wk=Wkall(ifig);
-    gname(ifig).name=sprintf('%4.2f strength',model.rock.Wk)
-    sequence_integrate
+    for irock=1:1; %limited to 1st layer
+        model(irock).rock.Wk=Wkall(ifig);
+    end
+    %gname(ifig).name=sprintf('%4.2f strength',model.rock.Wk)
+    gname(ifig).name=sprintf('%4.2f strength',Wkall(ifig));
+    sequence_integrate;
 end
 
 %%
@@ -50,7 +53,7 @@ set(gca,...
     'xscale','log',...
     'yscale','log',...
     'xlim',[1e-0,1e3]*100,...
-    'ylim',10.^[-18,-9],...
+    'ylim',10.^[-20,-10],...
     'box','on');
 
 subplot(212); hold on;
@@ -60,7 +63,7 @@ set(gca,...
     'fontSize',12,...
     'xscale','log',...
     'yscale','log',...'xlim',[1e-0,1e3]*100,...
-    'xlim',10.^[-18,-15],...
+    'xlim',10.^[-20,-15],...
     'box','on');
 
 legend(gname.name,'Location','NorthWest')
